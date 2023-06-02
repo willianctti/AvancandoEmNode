@@ -153,3 +153,67 @@ app.post('/users/create', async (req, res) => {
 objetos temos que inserir um parâmetro;
 ● Que é o raw como true;
 ● Vamos ver na prática
+
+na nossa rota de home
+
+app.get('/', async (req, res) => {
+    const users = await User.findAll({raw: true})
+
+    console.log(users)
+
+    res.render("home", {users: users})
+})	adicionamos nosso model na home para utilizarmos na nossa view home
+
+
+
+
+
+			Utilizando o WHERE
+● Para filtrar dados com o Sequelize utilizando o WHERE, precisamos 
+inserir um novo parâmetro;
+● Que será o where, um objeto onde colocamos a propriedades e valores 
+que queremos filtrar;
+● E para retornar apenas um resultado podemos utilizar o método findOne
+
+
+ <div class="actions">
+            <a href="/users/{{this.id}}">Ver detalhes</a>
+        </div>
+
+depois de fazer nossa view de um usuario especifico fazemos nossa rota
+
+
+app.get('/users/:id', async (req, res) => {
+    const id = req.params.id
+
+    const user = await User.findOne({raw:true, where: {id: id}})
+
+    res.render('userview', { user }) 		// Nossa view e o user
+})
+
+
+
+
+
+			Removendo itens
+● Para remover itens utilizando o método destroy;
+● A função vai ficar bem parecida com a de resgatar um usuário;
+● Só que será um POST, e que efetua a remoção, depois redirecionamos;
+● Precisamos também criar um formulário no front-end;
+● Vamos ver na prática
+
+na nossaa view de home colocamos o button de del
+
+ <form action="/users/delete/{{this.id}}" method="post">
+                <input type="submit" value="excluir" class="delete-btn">
+            </form>
+
+
+na nossa rota de enviar: post
+app.post('/users/delete/:id', async (req, res) => {
+    const id = req.params.id
+
+    await User.destroy({where: {id: id}})
+
+    res.redirect('/')
+})
