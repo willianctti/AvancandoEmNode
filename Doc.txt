@@ -1,0 +1,155 @@
+				O que é ORM?
+● Object Relational Mapper (ORM);
+● Abstrai a complexidade das queries, para trabalharmos com métodos;
+● Nos concentramos na regra de negócios e não nos comandos SQL;
+● Uma ORM muito utilizada para Node.js é a Sequelize;
+● Em alguns casos uma ORM pode trazer prejuízos de performance;
+● A query pura executa mais rapidamente do que a ORM;
+● E temos código “gerado”, ou seja, não vemos por baixo dos panos;
+
+
+
+			O que é Sequelize?
+● Uma ORM para Node.js;
+● Ela é baseada em promises (then, catch);
+● Tem integração para vários bancos relacionais, como o MySQL;
+● Precisamos sempre criar um Model, que é o reflexo da nossa tabela em 
+uma classe;
+● Precisamos instalar o pacote, já que é um módulo externo;
+
+
+
+			Instalando o Sequelize
+● Para instalar o Sequelize utilizamos o pacote sequelize;
+● E para conectar precisamos passar os mesmos dados que no outro 
+pacote: banco, usuário e senha;
+● Instanciando a classe Sequelize;
+● É possível checar a conexão com o método authenticate;
+● Vamos ver na prática
+
+
+npm install sequelize
+""   ""		mysql2
+
+no nosso db/conn
+
+const { Sequelize } = require('sequelize')
+
+const sequelize = new Sequelize('nodesequelize2', 'root', '', {
+    host: 'localhost',
+    dialect: 'mysql'				// Banco
+})
+
+
+Dpeois teremos o try e catch para conectar OU gerar algum erro // Promises
+
+try {
+
+    sequelize.authenticate()
+    console.log('Conectamos com sucesso')
+
+
+
+}   catch(err) {
+    console.log('Não foi possível conectar: ', error)
+}
+
+
+e o exportamos
+module.exports = sequelize
+
+importando
+const conn = require('./db/conn')
+
+
+
+
+
+
+
+
+				Criando um Model
+● Para criar um Model temos que instanciar uma classe que representará 
+uma tabela;
+● Um Model User cria uma nova tabela chamada users;
+● Colocamos os campos e os tipos dele como propriedades do Model;
+● Futuramente ele será utilizado para as operações entre aplicação e 
+banco;
+● O método sync faz a criação das tabelas baseada nos models
+
+
+const {DataTypes} = require('sequelize')
+
+const db = require('../db/conn')
+
+const User = db.define('User', {
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    occupation: {
+        type: DataTypes.STRING,
+        required: true
+    }
+})
+
+
+e o exportamos
+module.exports = User
+
+
+
+
+// Conexoes
+conn.sync(). then(() => {
+    app.listen(3000)
+}).catch((err) => console.log(err))
+
+
+
+
+
+
+
+
+
+			Inserindo dados
+● Para inserir um dado vamos precisar do Model que criamos, ou seja, 
+importar ele no arquivo de execução do comando;
+● O método a ser utilizado é o create;
+● Ele leva como parâmetro todos os campos, e insere o registro na tabela;
+● Vamos ver na prática
+
+depois e fazer noo views de inserção
+
+rota para mostrar a view
+app.get('/users/create', (req, res) => {
+    res.render('adduser')
+})
+
+e rota de post para enviar ao banco
+
+app.post('/users/create', async (req, res) => {
+    const name = req.body.name
+    const occupation = req.body.occupation
+    let newsletter = req.body.newsletter
+
+    if(newsletter === 'on') {
+        newsletter = true
+    }
+
+    await User.create({name, occupation, newsletter})
+    res.redirect('/')
+})
+
+
+
+
+
+			Lendo dados
+● Para ler os dados de uma tabela vamos utilizar o método fetchAll;
+● Que também requer o model, no nosso caso o User;
+● Os dados vem em um objeto especial, para transformar em um array de 
+objetos temos que inserir um parâmetro;
+● Que é o raw como true;
+● Vamos ver na prática
