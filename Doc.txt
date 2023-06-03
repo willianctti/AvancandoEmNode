@@ -307,3 +307,159 @@ seja, precisamos criar mais um no nosso projeto;
 dos models que vai criar a relação;
 ● Após o sync uma coluna que faz a relação entre as tabelas será criada;
 ● Que representa a FOREIGN KEY
+
+
+const { DataTypes } = require('sequelize')
+
+const db = require('../db/conn')
+
+const User = require('./User')		// Pegando o MOdel que iremos relacionar
+
+e finalizamos com nosso NOVO model
+
+const { DataTypes } = require('sequelize')
+const db = require('../db/conn')
+const User = require('./User')
+const Adress = db.define('Adress', {
+    street: {
+        type: DataTypes.STRING,
+        required: true,
+    },
+    number: {
+        type: DataTypes.STRING,
+        required: true,
+    },
+    city: {
+        type: DataTypes.STRING,
+        required: true,
+    },
+});
+
+module.exports = Adress
+
+
+finalizamos indicando a relação
+
+Adress.belongsTo(User)
+module.exports = Adress
+
+
+importamos no index e para atualizar o DB usamos o sync forte: true
+const Adress = require('./models/Adress')
+
+
+// Conexoes
+conn
+    // .sync()
+    .sync({force: true})
+    
+    . then(() => {
+    app.listen(3000)
+}).catch((err) => console.log(err))
+
+
+
+
+
+
+
+			Adicionando dado relacionado
+● Para adicionar o dado relacionado o fluxo é quase o mesmo;
+● O grande detalhe é que precisamos passar o id do item que o relaciona;
+● Podemos fazer com um input do tipo hidden;
+● Dentro do form que contém os dados do novo item;
+● E enviando para uma nova rota no nosso sistema;
+● Vamos ver na prática
+
+
+no front adicionamos um form que usa o :id do User se conectando a ele
+        <input type="hidden" name="UserId" value="{{user.id}}">
+
+
+
+backend:;
+
+
+app.post("/adress/create", async (req, res) => {
+    const UserId = req.body.UserId
+    const street = req.body.street
+    const number = req.body.number
+    const city = req.body.city
+
+    const adress = {
+        UserId,
+        street,
+        number,
+        city
+    }
+
+    await Adress.create(adress)
+
+    res.redirect(`/users/edit/${UserId}`)
+
+})
+
+
+
+
+
+
+
+
+
+			Resgatando dados relacionados
+● Precisamos definir as relações entre os dois Models, podemos fazer 
+isso no Model de endereços;
+● Depois basta utilizar o operador include com o nome do Model, onde 
+estamos resgatando o dado;
+● Isso faz com que os registros associados também venham na seleção;
+● Como há dados relacionados, precisamos remover o raw;
+● Vamos ver na prática
+
+
+app.get('/users/edit/:id', async (req, res) => {
+    const id = req.params.id
+
+    const user = await User.findOne({include: Adress, where: {id: id}})
+
+    res.render('useredit', {user: user.get({ plain: true})})
+})
+
+
+debuggando:
+
+app.get('/users/edit/:id', async (req, res) => {
+    const id = req.params.id
+
+    try {
+        const user = await User.findOne({include: Adress, where: {id: id}})
+        res.render('useredit', {user: user.get({ plain: true})})
+
+    } catch (err) {
+        console.log(err)
+    }
+})
+
+
+modeladress
+User.hasMany(Adress)
+
+
+
+
+			Removendo relacionados
+● Para remover itens relacionados utilizaremos o mesmo processo de 
+remoção de itens;
+● Criaremos um formulário que envia o id do item;
+● E uma rota para receber estas informações e executar a remoção, 
+utilizando o método destroy;
+● Vamos ver na prática
+
+no nosso front adicionamos o envio da rota com o button de submit
+
+  <form action="/adress/delete" method="post">
+                <input type="hidden" name="id" value="{{this.id}}"></form>
+                <input type="submit" value="Excluir">
+
+
+
