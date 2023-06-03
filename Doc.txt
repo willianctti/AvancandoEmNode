@@ -231,3 +231,79 @@ UPDATE;
 ● Vamos utilizar o método findOne, igual na rota de visualização;
 ● E fazer o preenchimento do form na nossa nova view;
 ● Vamos a prática
+
+começando pelo front
+
+HOME
+ <a href="/users/edit/{{this.id}}" class="details-btn">Editar</a>
+MANDANDO P NOSSA ROTA DO MAIN 
+
+view/useredit.handlebars
+
+<h1>Editando: {{user.name}}</h1>
+<form action="/users/update"  method="post" class="form">  //Mandando p nossa rota
+
+
+rota do back
+app.get('/users/edit/:id', async (req, res) => {
+    const id = req.params.id
+
+    const user = await User.findOne({raw: true, where: {id: id}})
+
+    res.render('useredit', {user})
+})
+
+
+
+agora precisamos do POST para efetivar a troca de dados
+
+app.post('/users/update', async (req, res) => {
+    const id = req.body.id
+    const name = req.body.name				// Pegamos os dados que vem da req
+    const occupation = req.body.occupation
+    let newsletter = req.body.newsletter
+
+    if(newsletter === 'on') {
+        newsletter = true
+    } else {
+        newsletter = false
+    }
+
+    const userData = {
+        id,					colocamos os dados em UM obj
+        name,
+        occupation,
+        newsletter
+    }
+
+    await User.update(userData, { where: {id: id}}) //Mandamos o obj para o DB
+})
+
+
+
+
+
+
+
+
+
+			Refazer as tabelas
+● Podemos forçar a reconstrução das tabelas;
+● No método sync, onde são sincronizados os models e as tabelas;
+● Vamos colocar um atributo: force como true;
+● Exemplo: sync({ force: true })
+● Note que os dados são perdidos neste processo;
+● Vamos ver na prática
+
+
+
+
+
+			Relacionamentos
+● Em bancos relacionais podemos criar relacionamentos entre as tabelas;
+● Para concretizar isso no Sequelize vamos precisar de dois Models, ou 
+seja, precisamos criar mais um no nosso projeto;
+● Depois precisamos inserir um método de relacionamento em algum 
+dos models que vai criar a relação;
+● Após o sync uma coluna que faz a relação entre as tabelas será criada;
+● Que representa a FOREIGN KEY
