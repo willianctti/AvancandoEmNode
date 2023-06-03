@@ -33,7 +33,7 @@ npm install sequelize
 
 no nosso db/conn
 
-const { Sequelize } = require('sequelize')
+const { Sequelize } = require('sequelize')		//Importando sequelize
 
 const sequelize = new Sequelize('nodesequelize2', 'root', '', {
     host: 'localhost',
@@ -78,11 +78,13 @@ banco;
 ● O método sync faz a criação das tabelas baseada nos models
 
 
-const {DataTypes} = require('sequelize')
+models/User.js
+
+const {DataTypes} = require('sequelize') //Propriedade do sequelize
 
 const db = require('../db/conn')
 
-const User = db.define('User', {
+const User = db.define('User', {	define define o modulo
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -217,3 +219,15 @@ app.post('/users/delete/:id', async (req, res) => {
 
     res.redirect('/')
 })
+
+
+
+
+
+			Editando itens
+● O primeiro passo da edição é resgatar os dados do item;
+● Com isso podemos preencher o formulário, para depois fazer o 
+UPDATE;
+● Vamos utilizar o método findOne, igual na rota de visualização;
+● E fazer o preenchimento do form na nossa nova view;
+● Vamos a prática
